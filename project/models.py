@@ -7,6 +7,9 @@ class Tag(models.Model):
 	def __unicode__(self):
 		return self.title
 
+class User(models.Model):
+	pass
+		
 class Project(models.Model):
 	title = models.CharField(max_length=64, unique=True)
 	description = models.TextField(max_length=1024)
@@ -18,7 +21,7 @@ class Project(models.Model):
 	
 	project_url = models.URLField(max_length=200, blank=True)
 	
-	tags = models.ManyToManyField(Tag)
+	tags = models.ManyToManyField(Tag, blank=True)
 	
 	#admins
 	
@@ -71,8 +74,24 @@ class Ranking(models.Model):
 	
 	def __unicode__(self):
 		return '*' * self.rank
+		
+class Invite(models.Model):
+	position = models.ForeignKey(Position)
+	
+	message = models.TextField(max_length=1024)
+	
+	#sender = models.ForeignKey(User)
+	#recipient = models.ForeignKey(User)
 
+	read = models.BooleanField(default=False)
 	
+class Application(models.Model):
+	position = models.ForeignKey(Position)
+	
+	message = models.TextField(max_length=1024)
 
+	#sender = models.ForeignKey(User)
 	
+	read = models.BooleanField(default=False)
 	
+	accepted = models.NullBooleanField(default=None)

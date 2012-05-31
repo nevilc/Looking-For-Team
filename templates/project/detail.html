@@ -1,0 +1,38 @@
+<h1>{{ project.title }}</h1>
+<p>{{ project.description }}</p>
+{% if project.project_url %}
+	<p>{{project.project_url}}</p>
+{% endif %}
+Created: {{project.creation_date}}<br />
+Modified: {{project.update_date}}<br />
+</p>
+<p>
+{% if project.open %}
+	Open
+{% else %}
+	Closed
+{% endif %}
+<br />
+</p>
+
+{% if project.tags %}
+	Tags
+	<ul>
+		{% for tag in project.tags.all %}
+			<li>
+				{{tag.title}}
+			</li>
+		{% endfor %}
+	</ul>
+{% endif %}
+
+{% if project.position_set %}
+	Positions
+	<ul>
+		{% for position in project.position_set.all %}
+			<li>
+				{{position.title}}
+			</li>
+		{% endfor %}
+	</ul>
+{% endif %}
