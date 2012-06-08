@@ -1,14 +1,37 @@
 from django.db import models
 from django.core import validators
 
+from django.contrib.auth.models import User
+
+import time
+
 class Tag(models.Model):
 	title = models.CharField(max_length=24)
 	
 	def __unicode__(self):
 		return self.title
 
-class User(models.Model):
-	pass
+class Userdata(models.Model):
+	@staticmethod
+	def avatar_filename(instance, filename):
+		return "avatar/" + instance.user.username + "_" + time.gmtime() + "_" + filename
+	
+	#user = models.ForeignKey(User, unique=True)
+	user = models.OneToOneField(User)
+	
+	avatar = models.ImageField(upload_to=avatar_filename)
+	
+	bio = models.TextField(max_length=1024)
+	
+	url = models.URLField(max_length=200, blank=True)
+	
+	
+	# location
+	
+	def __unicode__(self):
+		return "N/A"
+	
+	
 		
 class Project(models.Model):
 	title = models.CharField(max_length=64, unique=True)
@@ -19,7 +42,7 @@ class Project(models.Model):
 	
 	open = models.BooleanField(default=True)
 	
-	project_url = models.URLField(max_length=200, blank=True)
+	url = models.URLField(max_length=200, blank=True)
 	
 	tags = models.ManyToManyField(Tag, blank=True)
 	
@@ -55,6 +78,8 @@ class Skill(models.Model):
 	description = models.TextField(max_length=1024)
 	
 	icon = models.ImageField(upload_to='icons')
+	
+	parent = models.ForeignKey("self", blank=True, null=True)
 	
 	def __unicode__(self):
 		return self.title

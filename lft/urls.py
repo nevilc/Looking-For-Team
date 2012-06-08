@@ -1,4 +1,7 @@
 from django.conf.urls import patterns, include, url
+from django.views.generic import DetailView, ListView
+
+from project.models import Project, Userdata
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -17,6 +20,23 @@ urlpatterns = patterns('',
 	
 	
 	# /project/*
-	url(r'^project/$', 'project.views.index'),
-	url(r'^project/(?P<project_id>\d+)/$', 'project.views.detail'),
+	#url(r'^project/$', 'project.views.index'),
+	#url(r'^project/(?P<project_id>\d+)/$', 'project.views.detail'),
+	
+	
+	# /user/*
+	#url(r'^user/register$', 'project.views.userregister'),
+	
+	url(r'^project/(?P<pk>\d+)/$',
+        DetailView.as_view(
+            model=Project,
+            template_name='project/detail.html')),
+	
+	url(r'^user/(?P<pk>\d+)/$',
+        DetailView.as_view(
+            model=Userdata,
+            template_name='userdata/detail.html')),
+			
+	url(r'^user/new/$',
+		'project.views.usernew'),
 )
