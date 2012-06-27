@@ -2,6 +2,8 @@ from django.conf.urls import patterns, include, url
 from django.views.generic import DetailView, ListView
 
 from project.models import Project, Userdata
+from project.views import UserRegisterWizard
+from project.forms import UserForm, UserdataForm, UserdataInterestsForm
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -15,6 +17,10 @@ urlpatterns = patterns('',
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
+	url(r'^$', 'project.views.home'),
+	url(r'^user/login/$', 'project.views.user_login'),
+	url(r'^user/logout/$', 'project.views.user_logout'),
+	
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 	
@@ -37,6 +43,18 @@ urlpatterns = patterns('',
             model=Userdata,
             template_name='userdata/detail.html')),
 			
-	url(r'^user/new/$',
-		'project.views.usernew'),
+	
+	(r'^user/register/$',
+		UserRegisterWizard.as_view([UserForm, UserdataForm, UserdataInterestsForm])),
 )
+
+"""
+	url(r'^user/register/$',
+		'project.views.user_register'),
+	url(r'^user/register/2/$',
+		'project.views.user_userdata'),
+	url(r'^user/register/3/$',
+		'project.views.user_interests'),
+	url(r'^user/register/4/$',
+		'project.views.user_skills'),
+	"""

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post" action="">
+	{% csrf_token %}
+	
+	{% if form.errors %}
+		{{ form.errors }}
+	{% endif %}
+	
+	<table>
+		{{ form }}
+	</table>
+	<input type="submit" value="Continue" />
+</form>
+{% endblock %}

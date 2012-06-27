@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>
+			{% block title %}
+				Looking For Team
+			{% endblock %}
+		</title>
+	</head>
+	<body>
+		{% block loginheader %}
+			{% if user.is_authenticated %}
+				{{ user.username }} <a href="/user/logout">Logout</a>
+			{% else %}
+				<a href="/user/login/">Login</a> <a href="/user/register/">Register</a>
+			{% endif %}
+			</br>
+		{% endblock %}
+		
+		{% block header %}
+		{% endblock %}
+		
+		{% block content %}
+		{% endblock %}
+	</body>
+</html>
