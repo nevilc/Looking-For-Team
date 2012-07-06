@@ -21,6 +21,8 @@ urlpatterns = patterns('',
 	url(r'^user/login/$', 'project.views.user_login'),
 	url(r'^user/logout/$', 'project.views.user_logout'),
 	
+	url(r'^project/create/$', 'project.views.project_create'),
+	
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 	
@@ -33,10 +35,12 @@ urlpatterns = patterns('',
 	# /user/*
 	#url(r'^user/register$', 'project.views.userregister'),
 	
-	url(r'^project/(?P<pk>\d+)/$',
-        DetailView.as_view(
-            model=Project,
-            template_name='project/detail.html')),
+	#url(r'^project/(?P<pk>\d+)/$',
+    #    DetailView.as_view(
+    #        model=Project,
+    #        template_name='project/detail.html')),
+	
+	url(r'^project/(?P<project_id>\d+)/$', 'project.views.project_detail'),
 	
 	url(r'^user/(?P<pk>\d+)/$',
         DetailView.as_view(

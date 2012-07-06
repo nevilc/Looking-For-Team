@@ -5,11 +5,12 @@ from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.decorators import login_required
 
 from django.conf import settings
 
-from project.forms import UserForm, LoginForm
-from project.models import Project, User, Userdata
+from project.forms import UserForm, LoginForm, ProjectForm
+from project.models import Project, User, Userdata, Position, ProjectRelation, admin_position_default
 
 def home(request):
 	return render_to_response('index.html', {}, context_instance=RequestContext(request))
@@ -28,11 +29,57 @@ def user_logout(request):
 def index(request):
 	recent_project_list = Project.objects.all().order_by('-update_date')[:5]
 	return render_to_response('project/index.html', {'recent_project_list', recent_project_list})
-	
-def detail(request, project_id):
+
+def project_detail(request, project_id):
 	p = get_object_or_404(Project, pk=project_id)
 	return render_to_response('project/detail.html', {'project': p})
+	
+@login_required
+def project_create(request):
+	#template_project = Project()
 
+	#form = ProjectForm(request.POST or template_project)
+	form = ProjectForm(request.POST or None, initial={})
+	if form.is_valid():
+		new_project = form.save()
+		
+		new_position = admin_position_default
+		
+		new_position.project = new_project
+		
+		new_position.save()
+		
+		relation = ProjectRelation(admin=True, user=request.user.userdata, project=new_project, position=new_position)
+		
+		relation.save()
+		
+		admin_position_default.id=None
+		
+		
+		return redirect(project_detail, new_project.id)
+	
+	return render_to_response('project/create.html', {'form': form}, context_instance=RequestContext(request))
+		
+@login_required
+def project_newposition(request, project_id):
+	p = get_object_or_404(Project, pk=project_id)
+	
+	pr = ProjectRelation.objects.get(user=request.user, project=p)
+	
+	if pr == None or not pr.admin:
+		return HttpResponse('Unauthorized', status=401)
+	
+	form = PositionForm(request.POST or None)
+	
+	if form.is_valid():
+		pos = form.save()
+		
+		
+
+	
+	
+	
+	
 """
 class user:
 	@staticmethod

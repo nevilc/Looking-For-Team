@@ -79,27 +79,38 @@ class Project(models.Model):
 	title = models.CharField(max_length=64, unique=True)
 	description = models.TextField(max_length=1024)
 	
-	creation_date = models.DateTimeField('created')
-	update_date = models.DateTimeField('last updated')
+	creation_date = models.DateTimeField('created', auto_now_add=True)
+	update_date = models.DateTimeField('last updated', auto_now=True)
 	
 	open = models.BooleanField(default=True)
 	
 	url = models.URLField(max_length=200, blank=True)
 	
 	#tags = models.ManyToManyField(Tag, blank=True)
-	tags = generic.GenericRelation(Tag)
+	tags = generic.GenericRelation(Tag, blank=True)
 	
-	#admins
+	members = models.ManyToManyField(Userdata, through='ProjectRelation')
 	
 	def __unicode__(self):
 		return self.title
+		
+class ProjectRelation(models.Model):
+	user = models.ForeignKey(Userdata)
+	project = models.ForeignKey(Project)
+	
+	admin = models.BooleanField(default=False)
+	
+	position = models.OneToOneField('Position')
+	
+	creation_date = models.DateTimeField('created', auto_now_add=True)
+	update_date = models.DateTimeField('last updated', auto_now=True)
 	
 class Position(models.Model):
 	title = models.CharField(max_length=64)
 	description = models.TextField(max_length=1024)
 	
-	creation_date = models.DateTimeField('created')
-	update_date = models.DateTimeField('last updated')
+	creation_date = models.DateTimeField('created', auto_now_add=True)
+	update_date = models.DateTimeField('last updated', auto_now=True)
 	
 	# A restricted position requires a project admin to accept a user application
 	# Any user can accept an open position
@@ -117,6 +128,12 @@ class Position(models.Model):
 	
 	def __unicode__(self):
 		return self.title
+		
+admin_position_default = Position(
+	id=None,
+	title='Project Leader',
+	description='Benevolent dictator for life',
+)
 		
 class Invite(models.Model):
 	position = models.ForeignKey(Position)

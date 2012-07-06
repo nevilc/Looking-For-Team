@@ -1,6 +1,6 @@
 from django.forms import ModelForm, Form
 
-from project.models import Userdata, Ranking, Tag
+from project.models import Userdata, Ranking, Tag, Project
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.forms.models import fields_for_model
@@ -83,6 +83,17 @@ class UserdataForm(Form):
 	
 class UserdataInterestsForm(Form):
 	interests = fields_for_model(Userdata, ['interests'])['interests']
+	
+class ProjectForm(ModelForm):
+	class Meta:
+		model = Project
+		fields = (
+			'title',
+			'description',
+			'open',
+			'url',
+		)
+	
 	
 #class Userdata
 	
