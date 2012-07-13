@@ -1,6 +1,6 @@
 from django.forms import ModelForm, Form
 
-from project.models import Userdata, Ranking, Tag, Project
+from project.models import Userdata, Tag, Project, Position, UserInterest, UserSkill
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.forms.models import fields_for_model
@@ -83,6 +83,20 @@ class UserdataForm(Form):
 	
 class UserdataInterestsForm(Form):
 	interests = fields_for_model(Userdata, ['interests'])['interests']
+
+class UserInterestForm(ModelForm):
+	class Meta:
+		model = UserInterest
+		exclude = (
+			'user',
+		)
+		
+class UserSkillForm(ModelForm):
+	class Meta:
+		model = UserSkill
+		exclude = (
+			'user',
+		)
 	
 class ProjectForm(ModelForm):
 	class Meta:
@@ -94,6 +108,15 @@ class ProjectForm(ModelForm):
 			'url',
 		)
 	
+class PositionForm(ModelForm):
+	class Meta:
+		model = Position
+		fields = (
+			'title',
+			'description',
+			
+		)
+
 	
 #class Userdata
 	

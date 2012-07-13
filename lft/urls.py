@@ -22,6 +22,17 @@ urlpatterns = patterns('',
 	url(r'^user/logout/$', 'project.views.user_logout'),
 	
 	url(r'^project/create/$', 'project.views.project_create'),
+	url(r'^project/(?P<project_id>\d+)/delete/$', 'project.views.project_delete'),
+	
+	url(r'^project/(?P<project_id>\d+)/position/create/$', 'project.views.project_createposition'),
+	url(r'^project/(?P<project_id>\d+)/position/(?P<position_id>\d+)/delete/$', 'project.views.project_deleteposition'),
+	url(r'^project/(?P<project_id>\d+)/position/(?P<position_id>\d+)/free/$', 'project.views.project_freeposition'),
+	url(r'^project/(?P<project_id>\d+)/position/(?P<position_id>\d+)/accept/$', 'project.views.project_acceptposition'),
+	url(r'^project/(?P<project_id>\d+)/position/(?P<position_id>\d+)/promote/$', 'project.views.project_promoteposition'),
+	url(r'^project/(?P<project_id>\d+)/position/(?P<position_id>\d+)/demote/$', 'project.views.project_demoteposition'),
+	
+	url(r'^skill/reload/$', 'project.views.skill_reload'),
+	url(r'^interest/reload/$', 'project.views.interest_reload'),
 	
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

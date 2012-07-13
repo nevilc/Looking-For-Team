@@ -1,0 +1,64 @@
+---
+    default_levels: &default_levels
+      - title: No experience
+        description: >
+            Has never used or had any training in this area.
+      - title: Newbie
+        description: >
+            Has minimal experience in this field, but little skill or understanding.
+      - title: Novice
+        description: >
+            Has some grasp of the subject and can accomplish relatively simple tasks without assistance.
+      - title: Intermediate
+        description: >
+            Has a fair understanding of most areas involved and is capable of working on some more complicated problems
+      - title: Advanced
+        description: >
+            Has a solid comprehension of the topic as a whole. Rarely encounters problems.
+      - title: Expert
+        description: >
+            Has an unrivaled expertise in this skill. Reserved for those with extensive experience and practice.
+            
+    default_description: >
+        lorem ipsum
+
+    skills:
+      - name: Programming
+        description: >
+            Various coding skills.
+        subs:
+          - name: Programming Languages
+            description: >
+                C++, Java, Python, etc.
+            subs:
+              - name: C
+              - name: C++
+              - name: Java
+              - name: Python
+              - name: C#
+              - name: Javascript
+              - name: Ruby
+              - name: Objective c
+              - name: Visual Basic
+              - name: PHP
+              - name: Perl
+              - name: Delphi
+          - name: Paradigms
+            subs:
+              - name: Object-Oriented
+              - name: Functional
+          - name: Libraries and APIs
+            subs:
+              - name: OpenGL
+              - name: DirectX
+              - name: Qt
+      - name: Art
+        description: >
+            Various arting skills.
+        subs:
+          - name: Digital Art
+            subs:
+              - name: Pixel Art
+              - name: Vector Art
+                
+...
