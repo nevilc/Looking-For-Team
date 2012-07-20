@@ -3,7 +3,7 @@ from django.views.generic import DetailView, ListView
 
 from project.models import Project, Userdata
 from project.views import UserRegisterWizard
-from project.forms import UserForm, UserdataForm, UserdataInterestsForm
+from project.forms import UserForm, UserdataForm, UserdataInterestsForm, UserdataSkillsForm
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -22,6 +22,7 @@ urlpatterns = patterns('',
 	url(r'^user/logout/$', 'project.views.user_logout'),
 	
 	url(r'^project/create/$', 'project.views.project_create'),
+	url(r'^project/list/$', 'project.views.project_list'),
 	url(r'^project/(?P<project_id>\d+)/delete/$', 'project.views.project_delete'),
 	
 	url(r'^project/(?P<project_id>\d+)/position/create/$', 'project.views.project_createposition'),
@@ -58,9 +59,10 @@ urlpatterns = patterns('',
             model=Userdata,
             template_name='userdata/detail.html')),
 			
-	
+	#(r'^project/(?P<project_id>\d+)/position/create/$',
+	#	UserRegisterWizard.as_view([PositionForm, PositionSkillForm], initial={'0':{'project': get_object_or_404(Project, pk=project_id)}, '1': {}})),
 	(r'^user/register/$',
-		UserRegisterWizard.as_view([UserForm, UserdataForm, UserdataInterestsForm])),
+		UserRegisterWizard.as_view([UserForm, UserdataForm, UserdataInterestsForm, UserdataSkillsForm])),
 )
 
 """

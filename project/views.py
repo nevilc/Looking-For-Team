@@ -15,7 +15,7 @@ import datetime
 import yaml
 
 from project.forms import UserForm, LoginForm, ProjectForm, PositionForm
-from project.models import Project, User, Userdata, Position, Interest, Skill, ProjectRelation, admin_position_default
+from project.models import Project, User, Userdata, Position, Interest, Skill, UserInterest, UserSkill, ProjectInterest, PositionSkill, ProjectRelation, admin_position_default
 
 # not views, just helper functions!
 def can_edit_project(request, project):
@@ -79,10 +79,31 @@ def user_logout(request):
 	logout(request)
 	return redirect(home)
 
-def index(request):
-	recent_project_list = Project.objects.all().order_by('-update_date')[:5]
-	return render_to_response('project/index.html', {'recent_project_list', recent_project_list})
-
+def project_list(request):
+	if request.user.is_authenticated():
+		#interests = [i.interest for i in request.user.userdata.interests.all()]
+		interests = request.user.userdata.interests.all()
+		#project_list = Project.objects.filter('interests__interest_)
+		
+		#BAD
+		
+		matches = Project.objects.none()
+		for interest in interests:
+			matches = matches | Project.objects.filter(interests__id=interest.id)
+			print(matches)
+			
+		matches = matches.distinct()
+		
+		project_list = matches[:5]
+		
+	else:
+		# not logged in, show most recent projects
+		project_list = Project.objects.all().order_by('-update_date')[:5]
+		
+	#assert 0, "wat"
+	
+	return render_to_response('project/list.html', {'project_list': project_list}, context_instance=RequestContext(request))
+	
 def project_detail(request, project_id):
 	p = get_object_or_404(Project, pk=project_id)
 	
@@ -95,13 +116,17 @@ def project_create(request):
 	#form = ProjectForm(request.POST or template_project)
 	form = ProjectForm(request.POST or None, initial={})
 	if form.is_valid():
-		new_project = form.save()
+		
+		new_project = Project(title=form.cleaned_data['title'], description=form.cleaned_data['description'], url=form.cleaned_data['url'], open=form.cleaned_data['open'])
+		new_project.save()
+		
+		#new_project = form.save()
 		
 		new_position = admin_position_default
 		
 		new_position.project = new_project
 		
-		#new_position.save()
+		new_position.save()
 		
 		relation = ProjectRelation(admin=True, user=request.user.userdata, project=new_project)
 		relation.save()
@@ -112,6 +137,9 @@ def project_create(request):
 		
 		admin_position_default.id=None
 		
+		for interest in form.cleaned_data['interests']:
+			pi = ProjectInterest(project=new_project, interest=interest)
+			pi.save()
 		
 		return redirect(project_detail, new_project.id)
 	
@@ -367,6 +395,32 @@ def skill_reload(request):
 	
 	return redirect(home)
 	
+class PositionCreateWizard(SessionWizardView):
+	template_name = 'project/newposition.html'
+	
+	file_storage = FileSystemStorage(location=settings.MEDIA_ROOT+"temp/", base_url=settings.MEDIA_URL+"temp/")
+	
+	#def __init__(self, *args, **kwargs):
+	#	super(PositionCreateWizard, self).__init__(*args, **kwargs)
+	#	
+	#	assert 'project' in kwargs, 'missing project'
+	#	self.project = kwargs['project']
+	
+	def done(self, form_list, **kwargs):
+		position = Position(
+					project=form_list[0].cleaned_data['project'], 
+					title=form_list[0].cleaned_data['title'], 
+					description=form_list[0].cleaned_data['description'],)
+		
+		position.save()
+			
+		for k, v in form_list[1].cleaned_data.items():
+			if v > 0:
+				skillobj = Skill.objects.get(id=int(k))
+				ps = PositionSkill(position=position, skill=skillobj, rank=v)
+				ps.save()
+		
+		return redirect(project_detail, self.project)
 	
 class UserRegisterWizard(SessionWizardView):
 	template_name = 'user/register.html'
@@ -389,6 +443,17 @@ class UserRegisterWizard(SessionWizardView):
 					url=form_list[1].cleaned_data['url'])
 		
 		userdata.save()
+			
+		for interest in form_list[2].cleaned_data['interests']:
+			ui = UserInterest.objects.create(user=userdata, interest=interest)
+			ui.save()
+			
+		for k, v in form_list[3].cleaned_data.items():
+			if v > 0:
+				skillobj = Skill.objects.get(id=int(k))
+				us = UserSkill(user=userdata, skill=skillobj, rank=v)
+				us.save()
+		
 		#login(, auth_user)
 		
 		return redirect(home)

@@ -7,18 +7,9 @@ from django.contrib.auth.models import User
 
 from django.contrib.contenttypes.models import ContentType
 
-import time
+from widgets import RankingWidget
 
-class Tag(models.Model):
-	title = models.CharField(max_length=24)
-	
-	content_type = models.ForeignKey(ContentType)
-	object_id = models.PositiveIntegerField()
-	
-	target = generic.GenericForeignKey('content_type', 'object_id')
-	
-	def __unicode__(self):
-		return self.title
+import time
 
 		
 class Interest(models.Model):
@@ -180,7 +171,7 @@ class UserInterest(models.Model):
 	interest = models.ForeignKey(Interest)
 	
 	def __unicode__(self):
-		return interest.title
+		return self.interest.title
 
 class UserSkill(models.Model):
 	user = models.ForeignKey(Userdata)
@@ -189,14 +180,14 @@ class UserSkill(models.Model):
 	rank = models.IntegerField(validators=[validators.MinValueValidator(Skill.value_range[0]), validators.MaxValueValidator(Skill.value_range[1])])
 	
 	def __unicode__(self):
-		return skill.title + ': ' + ('*' * self.rank)
+		return self.skill.title + ': ' + ('*' * self.rank)
 	
 class ProjectInterest(models.Model):
 	project = models.ForeignKey(Project)
 	interest = models.ForeignKey(Interest)
 	
 	def __unicode__(self):
-		return interest.title
+		return self.interest.title
 	
 class PositionSkill(models.Model):
 	position = models.ForeignKey(Position)
@@ -208,7 +199,7 @@ class PositionSkill(models.Model):
 	rank = models.IntegerField(validators=[validators.MinValueValidator(Skill.value_range[0]), validators.MaxValueValidator(Skill.value_range[1])])
 	
 	def __unicode__(self):
-		return skill.title + ': ' + ('*' * self.rank)
+		return self.skill.title + ': ' + ('*' * self.rank)
 		
 class Invite(models.Model):
 	position = models.ForeignKey(Position)

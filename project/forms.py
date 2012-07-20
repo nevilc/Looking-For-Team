@@ -1,49 +1,18 @@
+from django.db import models
+from django.core import validators
+from django import forms
+
+from widgets import RankingWidget
+
 from django.forms import ModelForm, Form
 
-from project.models import Userdata, Tag, Project, Position, UserInterest, UserSkill
+from project.models import Userdata, Project, Position, Interest, Skill, UserInterest, UserSkill
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from django.forms.models import fields_for_model
+from django.forms.models import fields_for_model, ModelMultipleChoiceField
 from django.forms import ValidationError
 
-"""
-class UserForm(ModelForm):
-	class Meta:
-		model = User
-		fields = (
-			'username',
-			'first_name',
-			'last_name',
-			'email',
-			'password',
-			
-		)
-		#exclude = (
 
-class UserdataForm(ModelForm):
-	class Meta:
-		model = Userdata
-		fields = (
-			'avatar',
-			'bio',
-			'url',
-		)
-		
-class UserdataInterestsForm(ModelForm):
-	class Meta:
-		model = Userdata
-		fields = {
-			#'interests',
-		}
-		
-class UserdataSkillsForm(ModelForm):
-	class Meta:
-		model = Userdata
-		fields = {
-			#'rankings',
-		}
-		
-"""
 class UserForm(Form):
 	username = fields_for_model(User, ['username'])['username']
 	password = fields_for_model(User, ['password'])['password']
@@ -82,22 +51,28 @@ class UserdataForm(Form):
 	url = fields_for_model(Userdata, ['url'])['url']
 	
 class UserdataInterestsForm(Form):
-	interests = fields_for_model(Userdata, ['interests'])['interests']
+	#interests = fields_for_model(Userdata, ['interests'])['interests']
+	interests = ModelMultipleChoiceField(queryset=Interest.objects.filter(active=True))
 
-class UserInterestForm(ModelForm):
-	class Meta:
-		model = UserInterest
-		exclude = (
-			'user',
-		)
+class UserdataSkillsForm(Form):
+	#test = forms.IntegerField(required=False)
+
+	def __init__(self, *args, **kwargs):
+		#extra_fields = kwargs.pop('extra', 0)
+		super(UserdataSkillsForm, self).__init__(*args, **kwargs)
 		
-class UserSkillForm(ModelForm):
-	class Meta:
-		model = UserSkill
-		exclude = (
-			'user',
-		)
+		self.fields['workaround'] = forms.IntegerField(required=False)
+		
+		for skill in Skill.objects.filter(active=True):
+			#if skill.active:
+			self.fields[str(skill.id)] = forms.IntegerField(
+				label=skill.title, 
+				validators=[validators.MinValueValidator(Skill.value_range[0]), validators.MaxValueValidator(Skill.value_range[1])],
+				widget=RankingWidget,
+				required=False)
+					
 	
+"""
 class ProjectForm(ModelForm):
 	class Meta:
 		model = Project
@@ -106,8 +81,31 @@ class ProjectForm(ModelForm):
 			'description',
 			'open',
 			'url',
+			'interests',
 		)
 	
+	def clean(self):
+		cleaned_data = super(ContactForm, self).clean()
+		
+"""
+
+class ProjectForm(Form):
+	title = fields_for_model(Project, ['title'])['title']
+	description = fields_for_model(Project, ['description'])['description']
+	open = fields_for_model(Project, ['open'])['open']
+	url = fields_for_model(Project, ['url'])['url']
+	
+	interests = ModelMultipleChoiceField(queryset=Interest.objects.filter(active=True), required=False)
+
+"""	
+class PositionForm(Form):
+	#project = forms.ModelChoiceField(Project, editable=False)
+
+	title = fields_for_model(Position, ['title'])['title']
+	description = fields_for_model(Position, ['description'])['description']
+"""
+	
+#"""
 class PositionForm(ModelForm):
 	class Meta:
 		model = Position
@@ -116,7 +114,7 @@ class PositionForm(ModelForm):
 			'description',
 			
 		)
-
+#"""
 	
 #class Userdata
 	
@@ -137,3 +135,5 @@ class LoginForm(Form):
 			raise ValidationError("User and password combination not found")
 		
 		return cleaned_data
+		
+	
